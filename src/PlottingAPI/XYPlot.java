@@ -90,7 +90,7 @@ public class XYPlot extends ApplicationFrame {
     }
 
     public void plotLine(double[] xData, double[] yData, double[] yError, LineProperties lineProperties, LineProperties errorLineProperties){
-        plotLine(xData, yData, new double[xData.length], yError, lineProperties, errorLineProperties);
+        plotLine(xData, yData, null, yError, lineProperties, errorLineProperties);
     }
 
 
@@ -132,7 +132,7 @@ public class XYPlot extends ApplicationFrame {
     }
 
     public void plotStairs(double[] xData, double[] yData, double[] yError, LineProperties lineProperties, LineProperties errorLineProperties){
-        plotStairs(xData, yData, new double[xData.length], yError, lineProperties, errorLineProperties);
+        plotStairs(xData, yData,null, yError, lineProperties, errorLineProperties);
     }
 
 
@@ -174,7 +174,7 @@ public class XYPlot extends ApplicationFrame {
     }
 
     public void scatter(double[] xData, double[] yData, double[] yError, ShapeProperties shapeProperties, LineProperties errorLineProperties){
-        scatter(xData, yData, new double[xData.length], yError, shapeProperties, errorLineProperties);
+        scatter(xData, yData, null, yError, shapeProperties, errorLineProperties);
     }
 
 
@@ -319,8 +319,20 @@ public class XYPlot extends ApplicationFrame {
     }
 
     private void drawErrorBars(double[] xData, double[] yData, double[] xError, double[] yError, LineProperties properties) {
-        // Build the error series
         XYIntervalSeriesCollection collection = new XYIntervalSeriesCollection();
+        XYErrorRenderer errorRenderer = new XYErrorRenderer();
+
+        if (xError == null){
+            errorRenderer.setDrawXError(false);
+            xError = new double[xData.length];
+        }
+
+        if (yError == null){
+            errorRenderer.setDrawYError(false);
+            yError = new double[yData.length];
+        }
+
+        // Build the error series
         XYIntervalSeries series = new XYIntervalSeries(String.valueOf(getDatasetCount()));
         for (int i = 0; i < xData.length; i++){
             series.add(
@@ -331,11 +343,11 @@ public class XYPlot extends ApplicationFrame {
         collection.addSeries(series);
 
         // Set the line color and width
-        XYErrorRenderer errorRenderer = new XYErrorRenderer();
         errorRenderer.setBaseShapesFilled(false);
         errorRenderer.setDrawOutlines(false);
         errorRenderer.setErrorPaint(properties.getColor());
         errorRenderer.setErrorStroke(properties.getStroke());
+        errorRenderer.setCapLength(defaults.errorCapLength);
 
         drawData(collection, errorRenderer);
     }
@@ -368,6 +380,7 @@ public class XYPlot extends ApplicationFrame {
         private final float lineWidth           = 2.0f;
         private final float scatterOutlineWidth = 1.0f;
         private final float errorLineWidth      = 1.0f;
+        private final float errorCapLength      = 5.0f;
 
         private final float scatterSize         = 5.0f;
 
