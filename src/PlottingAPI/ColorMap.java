@@ -1,6 +1,11 @@
 package PlottingAPI;
 
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.renderer.LookupPaintScale;
+import org.jfree.chart.title.PaintScaleLegend;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
 
 import java.awt.*;
 
@@ -21,6 +26,16 @@ public class ColorMap {
         }
         return scale;
 
+    }
+
+    protected PaintScaleLegend getPaintLegend(double min, double max){
+        PaintScaleLegend legend = new PaintScaleLegend(getPaintScale(min, max), new NumberAxis("Test"));
+        legend.setAxisOffset(0.0);
+        legend.setAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);
+        legend.setPosition(RectangleEdge.RIGHT);
+        legend.setID("Test");
+        legend.setMargin(new RectangleInsets(5, 0, 50, 0));
+        return legend;
     }
 
     private static ColorMap jet(){

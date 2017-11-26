@@ -9,13 +9,18 @@ import org.jfree.chart.renderer.xy.XYBlockRenderer;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.PaintScaleLegend;
 import org.jfree.data.xy.*;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleInsets;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
-public class Plot extends ApplicationFrame {
+public class Plot extends JFrame {
 
     private final Defaults defaults = new Defaults();   // Defaults for this plot
     private JFreeChart chart;                           // The chart of this plot
@@ -42,7 +47,6 @@ public class Plot extends ApplicationFrame {
         // Create the actual frame
         super(title);
 
-
         // Create the chart
         chart = ChartFactory.createXYLineChart(title, xLabel, yLabel, null,
                 PlotOrientation.VERTICAL,false,true,false);
@@ -68,10 +72,10 @@ public class Plot extends ApplicationFrame {
         setContentPane(chartPanel);
 
 
+
         // Show user
         setVisible(true);
     }
-
 
 
     // **********************
@@ -204,6 +208,10 @@ public class Plot extends ApplicationFrame {
     // User surface plot methods
     // *************************
 
+    public void surface(double[] xData, double[] yData, double[][] zData){
+        surface(xData, yData, zData, defaults.colorMap);
+    }
+
     public void surface(double[] xData, double[] yData, double[][] zData, ColorMap colorMap){
 
         // Calculate the block heights we'll use
@@ -239,9 +247,36 @@ public class Plot extends ApplicationFrame {
         renderer.setBlockWidth(blockWidth);
         renderer.setBlockHeight(blockHeight);
 
+        chart.addSubtitle(colorMap.getPaintLegend(minValue, maxValue));
+
+
         // Draw the data
         drawData(dataset, renderer);
     }
+
+    public void contour(double[] xData, double[] yData, double[][] zData, double[] contours){
+
+        ContourGenerator contourGenerator = new ContourGenerator(xData, yData, zData);
+        for (int i = 0; i < contours.length; i++) {
+
+            XYSeriesCollection collection =
+                    contourGenerator.getContourSeriesCollection(
+                            String.valueOf(getDatasetCount()), contours[i]);
+
+            // Contour line renderer
+            XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer();
+            lineRenderer.setBaseShapesFilled(false);
+            lineRenderer.setDrawOutlines(false);
+            for (int j = 0; j < collection.getSeriesCount(); j++){
+                lineRenderer.setSeriesPaint(j, defaults.colors[i]);
+                lineRenderer.setSeriesStroke(j, new BasicStroke(2.0f));
+            }
+
+            drawData(collection, lineRenderer);
+        }
+    }
+
+
 
     // ************
     // User setters
@@ -410,6 +445,7 @@ public class Plot extends ApplicationFrame {
 
 
 
+
     // *******************************
     // Struct for holding our defaults
     // *******************************
@@ -431,6 +467,8 @@ public class Plot extends ApplicationFrame {
         private final LineProperties.Style gridLineStyle  = LineProperties.Style.Solid;
         private final LineProperties.Style lineStyle      = LineProperties.Style.Solid;
         private final LineProperties.Style errorLineStyle = LineProperties.Style.Solid;
+
+        private final ColorMap colorMap = ColorMap.jet;
 
         private final Color gridLineColor       = Color.LIGHT_GRAY;
         private final Color scatterOutlineColor = Color.BLACK;

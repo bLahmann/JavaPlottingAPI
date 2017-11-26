@@ -35,7 +35,7 @@ public class ArrayUtils {
 
     }
 
-    public static double[] normpdf(double area, double mu, double sigma, double[] x){
+    public static double[] gaussian(double area, double mu, double sigma, double[] x){
         double norm = area / sigma / Math.sqrt(2*Math.PI);
         Gaussian gaussian = new Gaussian(norm, mu, sigma);
 
