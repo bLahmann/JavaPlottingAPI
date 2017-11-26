@@ -5,6 +5,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.xy.XYBlockRenderer;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -14,11 +15,12 @@ import org.jfree.ui.RectangleInsets;
 
 import java.awt.*;
 
-public class XYPlot extends ApplicationFrame {
+public class Plot extends ApplicationFrame {
 
     private final Defaults defaults = new Defaults();   // Defaults for this plot
     private JFreeChart chart;                           // The chart of this plot
 
+    // TODO: May want to change this to seperate integers for different plot types (i.e. scatter vs plot)
     private int uniqueDatasets = 0;
 
 
@@ -27,15 +29,15 @@ public class XYPlot extends ApplicationFrame {
     // Constructors
     // ************
 
-    public XYPlot(){
+    public Plot(){
         this(null, null, null);
     }
 
-    public XYPlot(String title){
+    public Plot(String title){
         this(title, null, null);
     }
 
-    public XYPlot(String title, String xLabel, String yLabel) {
+    public Plot(String title, String xLabel, String yLabel) {
 
         // Create the actual frame
         super(title);
@@ -198,6 +200,48 @@ public class XYPlot extends ApplicationFrame {
 
 
 
+    // *************************
+    // User surface plot methods
+    // *************************
+
+    public void surface(double[] xData, double[] yData, double[][] zData, ColorMap colorMap){
+
+        // Calculate the block heights we'll use
+        double blockWidth  = Math.abs(xData[1] - xData[0]);
+        double blockHeight = Math.abs(yData[1] - yData[0]);
+
+        // Calculate the min and max values
+        double minValue = Double.MAX_VALUE;
+        double maxValue = Double.MIN_VALUE;
+
+        // We need to combine all of the data into a single array
+        int size = xData.length * yData.length;
+        double[][] data = new double[3][size];
+        for (int i = 0; i < size; i++) {
+            int xIndex = i % xData.length;
+            int yIndex = Math.floorDiv(i, xData.length);
+
+            data[0][i] = xData[xIndex];
+            data[1][i] = yData[yIndex];
+            data[2][i] = zData[yIndex][xIndex];
+
+            minValue = Math.min(minValue, zData[yIndex][xIndex]);
+            maxValue = Math.max(maxValue, zData[yIndex][xIndex]);
+        }
+
+        // Create the dataset
+        DefaultXYZDataset dataset = new DefaultXYZDataset();
+        dataset.addSeries(String.valueOf(getDatasetCount()), data);
+
+        // Create the renderer
+        XYBlockRenderer renderer = new XYBlockRenderer();
+        renderer.setPaintScale(colorMap.getPaintScale(minValue, maxValue));
+        renderer.setBlockWidth(blockWidth);
+        renderer.setBlockHeight(blockHeight);
+
+        // Draw the data
+        drawData(dataset, renderer);
+    }
 
     // ************
     // User setters
