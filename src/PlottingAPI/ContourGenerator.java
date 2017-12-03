@@ -1,6 +1,5 @@
 package PlottingAPI;
 
-import jdk.nashorn.internal.runtime.arrays.ArrayIndex;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -12,7 +11,6 @@ public class ContourGenerator {
 
     private final static double ACCEPTING_VALUE_FRACTION = 0.01;
     private final static double ACCEPTING_DISTANCE_FRACTION = 0.01;
-    private final static double maxAngle = 25.0;
 
     private static double ACCEPTING_DISTANCE = 0.0;
 
@@ -88,12 +86,20 @@ public class ContourGenerator {
         currentContourLine.add(currentPoint);
         points.remove(currentPoint);
 
+        boolean first = true;
         while (!points.isEmpty()){
 
-            // Find the nearest point
+            // Find the all nearby points
+            /*
+            ArrayList<IndexPoint> nearbyPoints = getNearbyPoints(points, currentPoint, ACCEPTING_DISTANCE);
+            Vector2D tangentVector = getGradientTangent(currentPoint);
+
+            // Pick the point that most closely matches the true contour line
+            IndexPoint nextPoint = findClosestPointToVector(nearbyPoints, currentPoint, tangentVector);
+            */
+
             IndexPoint nearestPoint = getNearestPoint(points, currentPoint);
             points.remove(nearestPoint);
-
 
             double distance = currentPoint.distance(nearestPoint);
 
@@ -124,6 +130,35 @@ public class ContourGenerator {
 
         sortedPoints.add(currentContourLine);
         return sortedPoints;
+    }
+
+    private ArrayList<IndexPoint> getNearbyPoints(ArrayList<IndexPoint> points, IndexPoint origin, double radius){
+        ArrayList<IndexPoint> nearbyPoints = new ArrayList<>();
+        for (IndexPoint point : points){
+            if (origin.distance(point) < radius){
+                nearbyPoints.add(point);
+            }
+        }
+
+        return nearbyPoints;
+    }
+
+    private IndexPoint findClosestPointToVector(ArrayList<IndexPoint> points, IndexPoint origin, Vector2D referenceVector){
+        IndexPoint bestPoint = points.get(0);
+        Vector2D vector = getVector(origin, bestPoint);
+        double minAngle = Vector2D.angle(referenceVector, vector);
+
+        for (IndexPoint point : points){
+
+            vector = getVector(origin, point);
+            double angle = Vector2D.angle(referenceVector, vector);
+            if (angle < minAngle){
+                minAngle = angle;
+                bestPoint = point;
+            }
+        }
+
+        return bestPoint;
     }
 
     private IndexPoint getNearestPoint(ArrayList<IndexPoint> points, IndexPoint referencePoint){
@@ -166,6 +201,10 @@ public class ContourGenerator {
         // Vector tangent to the gradient
         Vector2D vector = new Vector2D(-1.0, dfdx / dfdy);
         return vector.normalize();
+    }
+
+    private Vector2D getVector(IndexPoint p1, IndexPoint p2){
+        return getVector(getPhysicalPoint(p1), getPhysicalPoint(p2));
     }
 
 
