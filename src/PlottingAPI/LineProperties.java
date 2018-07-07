@@ -10,8 +10,12 @@ public class LineProperties {
     private double lineWidth = 2.0;
     private Color color = Color.BLACK;
 
-    public static LineProperties solidBlackLine(){
-        return new LineProperties(Style.Solid, 2.0f, Color.BLACK);
+    public static LineProperties blackLine(double lineWidth){
+        return new LineProperties(Style.Solid, lineWidth, Color.BLACK);
+    }
+
+    public static LineProperties redLine(double lineWidth){
+        return new LineProperties(Style.Solid, lineWidth, Color.RED);
     }
 
     public LineProperties(Style style, double lineWidth, Color color) {

@@ -9,12 +9,9 @@ public class ArrayUtils {
     // *************************
 
     public static double[] linspace(double a, double b, int N){
-        double min = Math.min(a, b);
-        double max = Math.max(a, b);
-
         double[] values = new double[N];
         for (int i = 0; i < values.length; i++){
-            values[i] = min + i*(max - min)/(N-1);
+            values[i] = a + i*(b - a)/(N-1);
         }
 
         return values;
@@ -70,9 +67,9 @@ public class ArrayUtils {
 
 
 
-    // ****************
-    // Basic operations
-    // ****************
+    // **********************
+    // Basic array operations
+    // **********************
 
     public static double[] pow(double[] array, double power){
         double[] result = new double[array.length];

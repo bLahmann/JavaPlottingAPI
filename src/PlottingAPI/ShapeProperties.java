@@ -12,6 +12,16 @@ public class ShapeProperties {
     private Color fillColor   = Color.RED;
     private Color outlineColor = Color.BLACK;
 
+
+    public static ShapeProperties blackSquare(double size, double lineWidth){
+        return new ShapeProperties(lineWidth, size, Color.BLACK, Color.BLACK);
+    }
+
+    public static ShapeProperties redSquare(double size, double lineWidth){
+        return new ShapeProperties(lineWidth, size, Color.RED, Color.BLACK);
+    }
+
+
     public ShapeProperties() {
     }
 

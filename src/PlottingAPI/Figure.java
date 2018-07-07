@@ -9,23 +9,18 @@ import org.jfree.chart.renderer.xy.XYBlockRenderer;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.title.PaintScaleLegend;
 import org.jfree.data.xy.*;
-import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleInsets;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
-public class Plot extends JFrame {
+public class Figure extends JFrame {
 
     private final Defaults defaults = new Defaults();   // Defaults for this plot
     private JFreeChart chart;                           // The chart of this plot
 
-    // TODO: May want to change this to seperate integers for different plot types (i.e. scatter vs plot)
+    // TODO: May want to change this to separate integers for different plot types (i.e. scatter vs plot)
     private int uniqueDatasets = 0;
 
 
@@ -34,15 +29,15 @@ public class Plot extends JFrame {
     // Constructors
     // ************
 
-    public Plot(){
+    public Figure(){
         this(null, null, null);
     }
 
-    public Plot(String title){
+    public Figure(String title){
         this(title, null, null);
     }
 
-    public Plot(String title, String xLabel, String yLabel) {
+    public Figure(String title, String xLabel, String yLabel) {
 
         // Create the actual frame
         super(title);
@@ -78,33 +73,16 @@ public class Plot extends JFrame {
     }
 
 
-    // **********************
-    // User plot line methods
-    // **********************
 
-    public void plotLine(double[] xData, double[] yData){
-        plotLine(xData, yData, defaults.getLineProperties());
+    // *****************
+    // Line plot methods
+    // *****************
+
+    public void plot(double[] xData, double[] yData){
+        plot(xData, yData, defaults.getLineProperties());
     }
 
-    public void plotLine(double[] xData, double[] yData, LineProperties lineProperties){
-        plotLine(xData, yData, null, null, lineProperties, null);
-    }
-
-
-    public void plotLine(double[] xData, double[] yData, double[] yError){
-        plotLine(xData, yData, yError, defaults.getLineProperties(), defaults.getErrorLineProperties());
-    }
-
-    public void plotLine(double[] xData, double[] yData, double[] yError, LineProperties lineProperties, LineProperties errorLineProperties){
-        plotLine(xData, yData, null, yError, lineProperties, errorLineProperties);
-    }
-
-
-    public void plotLine(double[] xData, double[] yData, double[] xError, double[] yError){
-        plotLine(xData, yData, xError, yError, defaults.getLineProperties(), defaults.getErrorLineProperties());
-    }
-
-    public void plotLine(double[] xData, double[] yData, double[] xError, double[] yError, LineProperties lineProperties, LineProperties errorLineProperties){
+    public void plot(double[] xData, double[] yData, LineProperties lineProperties){
 
         // Keep track of the number of unique datasets plotted
         uniqueDatasets++;
@@ -112,41 +90,19 @@ public class Plot extends JFrame {
         // Draw the data
         drawLine(xData, yData, lineProperties);
 
-        // If we have them, draw error bars
-        if (errorLineProperties != null) {
-            drawErrorBars(xData, yData, xError, yError, errorLineProperties);
-        }
     }
 
 
 
-    // ************************
-    // User plot stairs methods
-    // ************************
+    // ******************
+    // Stair plot methods
+    // ******************
 
-    public void plotStairs(double[] xData, double[] yData){
-        plotStairs(xData, yData, defaults.getLineProperties());
+    public void stairs(double[] xData, double[] yData){
+        stairs(xData, yData, defaults.getLineProperties());
     }
 
-    public void plotStairs(double[] xData, double[] yData, LineProperties lineProperties){
-        plotStairs(xData, yData, null, null, lineProperties, null);
-    }
-
-
-    public void plotStairs(double[] xData, double[] yData, double[] yError){
-        plotStairs(xData, yData, yError, defaults.getLineProperties(), defaults.getErrorLineProperties());
-    }
-
-    public void plotStairs(double[] xData, double[] yData, double[] yError, LineProperties lineProperties, LineProperties errorLineProperties){
-        plotStairs(xData, yData,null, yError, lineProperties, errorLineProperties);
-    }
-
-
-    public void plotStairs(double[] xData, double[] yData, double[] xError, double[] yError){
-        plotStairs(xData, yData, xError, yError, defaults.getLineProperties(), defaults.getErrorLineProperties());
-    }
-
-    public void plotStairs(double[] xData, double[] yData, double[] xError, double[] yError, LineProperties lineProperties, LineProperties errorLineProperties){
+    public void stairs(double[] xData, double[] yData, LineProperties lineProperties){
 
         // Keep track of the number of unique datasets plotted
         uniqueDatasets++;
@@ -154,41 +110,19 @@ public class Plot extends JFrame {
         // Draw the data
         drawStairs(xData, yData, lineProperties);
 
-        // If we have them, draw error bars
-        if (errorLineProperties != null) {
-            drawErrorBars(xData, yData, xError, yError, errorLineProperties);
-        }
     }
 
 
 
-    // *************************
-    // User scatter plot methods
-    // *************************
+    // ********************
+    // Scatter plot methods
+    // ********************
 
     public void scatter(double[] xData, double[] yData){
         scatter(xData, yData, defaults.getShapeProperties());
     }
 
     public void scatter(double[] xData, double[] yData, ShapeProperties shapeProperties){
-        scatter(xData, yData, null, null, shapeProperties, null);
-    }
-
-
-    public void scatter(double[] xData, double[] yData, double[] yError){
-        scatter(xData, yData, yError, defaults.getShapeProperties(), defaults.getErrorLineProperties());
-    }
-
-    public void scatter(double[] xData, double[] yData, double[] yError, ShapeProperties shapeProperties, LineProperties errorLineProperties){
-        scatter(xData, yData, null, yError, shapeProperties, errorLineProperties);
-    }
-
-
-    public void scatter(double[] xData, double[] yData, double[] xError, double[] yError){
-        scatter(xData, yData, xError, yError, defaults.getShapeProperties(), defaults.getErrorLineProperties());
-    }
-
-    public void scatter(double[] xData, double[] yData, double[] xError, double[] yError, ShapeProperties shapeProperties, LineProperties errorLineProperties){
 
         // Keep track of the number of unique datasets plotted
         uniqueDatasets++;
@@ -196,17 +130,63 @@ public class Plot extends JFrame {
         // Draw the data
         drawScatter(xData, yData, shapeProperties);
 
-        // If we have them, draw error bars
-        if (errorLineProperties != null) {
-            drawErrorBars(xData, yData, xError, yError, errorLineProperties);
-        }
     }
 
 
 
-    // *************************
-    // User surface plot methods
-    // *************************
+    // *******************
+    // X error bar methods
+    // *******************
+
+    public void xErrorbars(double[] xData, double[] yData, double[] xError){
+        xErrorbars(xData, yData, xError, xError, defaults.getErrorLineProperties());
+    }
+
+    public void xErrorbars(double[] xData, double[] yData, double[] lowerXError, double[] upperXError){
+        xErrorbars(xData, yData, lowerXError, upperXError, defaults.getErrorLineProperties());
+    }
+
+    public void xErrorbars(double[] xData, double[] yData, double[] xError, LineProperties errorLineProperties){
+        xErrorbars(xData, yData, xError, xError, errorLineProperties);
+    }
+
+    public void xErrorbars(double[] xData, double[] yData, double[] lowerXError, double[] upperXError, LineProperties errorLineProperties){
+        drawErrorBars(xData, yData,
+                lowerXError, upperXError,
+                null, null,
+                errorLineProperties);
+    }
+
+
+
+    // *******************
+    // Y error bar methods
+    // *******************
+
+    public void yErrorbars(double[] xData, double[] yData, double[] yError) {
+        yErrorbars(xData, yData, yError, yError, defaults.getErrorLineProperties());
+    }
+
+    public void yErrorbars(double[] xData, double[] yData, double[] lowerYError, double[] upperYError){
+        yErrorbars(xData, yData, lowerYError, upperYError, defaults.getErrorLineProperties());
+    }
+
+    public void yErrorbars(double[] xData, double[] yData, double[] yError, LineProperties errorLineProperties){
+        yErrorbars(xData, yData, yError, yError, errorLineProperties);
+    }
+
+    public void yErrorbars(double[] xData, double[] yData, double[] lowerYError, double[] upperYError, LineProperties errorLineProperties){
+        drawErrorBars(xData, yData,
+                null, null,
+                lowerYError, upperYError,
+                errorLineProperties);
+    }
+
+
+
+    // ********************
+    // Surface plot methods
+    // ********************
 
     public void surface(double[] xData, double[] yData, double[][] zData){
         surface(xData, yData, zData, defaults.colorMap);
@@ -278,9 +258,9 @@ public class Plot extends JFrame {
 
 
 
-    // ************
-    // User setters
-    // ************
+    // ******************************
+    // Figure property setter methods
+    // ******************************
 
     public void setTitle(String title, float size){
         chart.setTitle(title);
@@ -397,26 +377,32 @@ public class Plot extends JFrame {
         drawData(collection, shapeRenderer);
     }
 
-    private void drawErrorBars(double[] xData, double[] yData, double[] xError, double[] yError, LineProperties properties) {
+    private void drawErrorBars(double[] xData, double[] yData,
+                               double[] lowerXError, double[] upperXError,
+                               double[] lowerYError, double[] upperYError,
+                               LineProperties properties) {
+
         XYIntervalSeriesCollection collection = new XYIntervalSeriesCollection();
         XYErrorRenderer errorRenderer = new XYErrorRenderer();
 
-        if (xError == null){
+        if (lowerXError == null){
             errorRenderer.setDrawXError(false);
-            xError = new double[xData.length];
+            lowerXError = new double[xData.length];
+            upperXError = new double[xData.length];
         }
 
-        if (yError == null){
+        if (lowerYError == null){
             errorRenderer.setDrawYError(false);
-            yError = new double[yData.length];
+            lowerYError = new double[yData.length];
+            upperYError = new double[yData.length];
         }
 
         // Build the error series
         XYIntervalSeries series = new XYIntervalSeries(String.valueOf(getDatasetCount()));
         for (int i = 0; i < xData.length; i++){
             series.add(
-                    xData[i], xData[i] - xError[i], xData[i] + xError[i],
-                    yData[i], yData[i] - yError[i], yData[i] + yError[i]
+                    xData[i], xData[i] - lowerXError[i], xData[i] + upperXError[i],
+                    yData[i], yData[i] - lowerYError[i], yData[i] + upperYError[i]
             );
         }
         collection.addSeries(series);
